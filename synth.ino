@@ -148,9 +148,9 @@ void setup()
     Osc2.setWaveTable(selectSawTable);
     Osc3.setWaveTable(selectSawTable);
     
-    Lfo1.frequency(2.0);
-    Lfo1.amplitude(0.002);
-    Osc2.setFMAmount(1);
+//    Lfo1.frequency(2.0);
+//    Lfo1.amplitude(0.002);
+//    Osc2.setFMAmount(1);
     //initialize usbMIDI
     usbMIDI.setHandleNoteOff(OnNoteOff);
     usbMIDI.setHandleNoteOn(OnNoteOn);
@@ -160,9 +160,7 @@ void setup()
     mainFilter.updateCoefs(0,updateFilter); // default set updateCoefs(0,updateFilter);
     mainFilter.updateCoefs(1,updateFilter); // default set updateCoefs(0,updateFilter);
     //ready
-    digitalWrite(ledPin,LOW);
-    
-    
+    digitalWrite(ledPin,LOW);    
 }
 elapsedMillis e;
 void loop()

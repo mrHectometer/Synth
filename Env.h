@@ -54,10 +54,10 @@ public:
         envLevel = 0;
         //some init values.
         currentState = ENVSTATE_SILENT;
-        setAttack(1.0);
-        setDecay(20.0);
-        setSustain(0.6);
-        setRelease(20.0);
+        attackInc = 9000000;
+        decayDec =  1000000;
+        sustainLevel = ENV_MAX_LEVEL/2;
+        releaseDec =2000000;
     }
     void noteOn()
     {

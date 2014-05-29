@@ -57,7 +57,7 @@ void AudioEffectEnvelope::update(void)
     {
         switch(currentState)
         {
-            //silent state: do nothing
+            //silent state: niksen
         case ENVSTATE_SILENT:
             break;
             //attack    
@@ -66,22 +66,23 @@ void AudioEffectEnvelope::update(void)
             if(envLevel < attackInc)//overflow
             {
                 currentState = ENVSTATE_DECAY;
-                envLevel = ENV_MAX_LEVEL;//Maximal level
+                envLevel = ENV_MAX_LEVEL;//het maximale niveau
             }
             break;
-            //decay phase    
+            //decay fase    
         case ENVSTATE_DECAY:
             envLevel-=decayDec;
-            if(envLevel < sustainLevel || envLevel > (ENV_MAX_LEVEL-decayDec))//under sustain level or underflow(if no sustain)
+            if(envLevel < sustainLevel || envLevel > (ENV_MAX_LEVEL-decayDec))//under the sustain level or underflow
             {
-                currentState = ENVSTATE_DECAY;
-                envLevel = sustainLevel;//set to the sustain level
+                currentState = ENVSTATE_SUSTAIN;
+                envLevel = sustainLevel;//clippen naar de grens
             }
             break; 
-            //sustain: do nothing until noteOff   
+            //sustain: gewoon niksen    
         case ENVSTATE_SUSTAIN:
             break;    
-            //release: decrease until we have an underflow
+            //release: afname tot we een underflow hebben.
+            //in dat geval gaan we naar de silent fase    
         case ENVSTATE_RELEASE:
             envLevel-=releaseDec;
             if(envLevel > (ENV_MAX_LEVEL-releaseDec))
@@ -94,14 +95,10 @@ void AudioEffectEnvelope::update(void)
         default:
             break;
         }
-        val = envLevel >> 16;//envLevel is 32 bits, so we have to shift
-        
-        //if used as envelope effect
-        sample = (sample * val) >> 16;
+        val = envLevel >> 16;//envLevel is 32 bits en gebruikt de hele range.
         sample = block->data[i];
+        sample = (sample * val) >> 16;
         block->data[i] = sample;
-        //if used as envelope generator
-        //block->data[i] = val;
     }
     transmit(block);
     release(block);
