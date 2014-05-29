@@ -1,2 +1,0 @@
-AudioEffectEnvelope	KEYWORD1
-AudioSynthWaveformOsc	KEYWORD1
