@@ -114,8 +114,6 @@ void OnControlChange(byte channel, byte control, byte value)
     //2 = amplitude Aenv
     //3 = pulsewidth?
     //4 = filter
-    
-    
     if(control == 141) Lfo1.frequency(fPow100((float)value/127.0, 20));
     if(control == 142) Lfo1.amplitude(fPow100((float)value/127.0, 1.0));
 }
@@ -132,10 +130,10 @@ void setup()
     Serial.begin(9600);
     dac.analogReference(EXTERNAL);    
     mix_oscs(control_oscs_mix, control_subosc_mix);
-//    aEnv.setAttack(1.0);
-//    aEnv.setDecay(20.0);
-//    aEnv.setSustain(0.6);
-//    aEnv.setRelease(20.0);
+    aEnv.setAttack(1.0);
+    aEnv.setDecay(20.0);
+    aEnv.setSustain(0.6);
+    aEnv.setRelease(20.0);
 
     Osc1.setGlideStep(50);
     Osc2.setGlideStep(50);
@@ -148,9 +146,9 @@ void setup()
     Osc2.setWaveTable(selectSawTable);
     Osc3.setWaveTable(selectSawTable);
     
-//    Lfo1.frequency(2.0);
-//    Lfo1.amplitude(0.002);
-//    Osc2.setFMAmount(1);
+    Lfo1.frequency(0.8);
+    Lfo1.amplitude(.0);
+    Osc2.setFMAmount(0.0);
     //initialize usbMIDI
     usbMIDI.setHandleNoteOff(OnNoteOff);
     usbMIDI.setHandleNoteOn(OnNoteOn);
