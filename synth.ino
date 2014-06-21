@@ -12,6 +12,7 @@
 #include <Audio.h>
 #define DEBBIE
 #include "debugUtils.h"
+#include "Seq.h"
 #include "lfo.h"
 #include "osc.h"
 #include "env.h"
@@ -19,6 +20,7 @@
 #include "routing.h"
 ///////////////////////////////////////////////////////////////////////////////////////////
 const int ledPin = 13;
+AudioSynthSequencer mainSeq;
 ///////////////////////////////////////////////////////////////////////////////////////////
 //midi functions
 
@@ -42,8 +44,9 @@ void OnNoteOn(byte channel, byte note, byte velocity)
     {
         Osc1.setNote(note,true);
         Osc2.setNote(note,true);
-        Osc3.setNote(note,true);
+        Osc3.setNote(note,true);  
     }
+    digitalWriteFast(ledPin,HIGH);
     currentNote = note;
 }
 void OnNoteOff(byte channel, byte note, byte velocity)
@@ -52,6 +55,7 @@ void OnNoteOff(byte channel, byte note, byte velocity)
         return;
     currentNote = 0;
     aEnv.noteOff();
+    digitalWriteFast(ledPin,LOW);
 }
 void mix_oscs(float a, float b)
 {
@@ -126,7 +130,7 @@ void setup()
 {
     AudioMemory(18);
     pinMode(ledPin,OUTPUT);
-    digitalWrite(ledPin,HIGH);
+    digitalWriteFast(ledPin,HIGH);
     Serial.begin(9600);
     dac.analogReference(EXTERNAL);    
     mix_oscs(control_oscs_mix, control_subosc_mix);
@@ -158,9 +162,11 @@ void setup()
     mainFilter.updateCoefs(0,updateFilter); // default set updateCoefs(0,updateFilter);
     mainFilter.updateCoefs(1,updateFilter); // default set updateCoefs(0,updateFilter);
     //ready
-    digitalWrite(ledPin,LOW);    
+    digitalWriteFast(ledPin,LOW);    
 }
 elapsedMillis e;
+elapsedMillis t;
+int8_t seqNote = 0;
 void loop()
 { 
     calcBiquad(filterType    ,filterFreq        ,0         ,filterRes    ,2147483648        ,44100         ,updateFilter);
@@ -170,7 +176,14 @@ void loop()
     {
         DEBUG_PRINT1("AudioProcessorUsageMax()", AudioProcessorUsageMax());
         DEBUG_PRINT1("Osc1.processorUsageMax()", Osc1.processorUsageMax());
-        e-=2;
+        e-=500;
     }
+//    if(t > 140)
+//    {
+//        t-=140;
+//        OnNoteOff(0, seqNote, 127);
+//        seqNote = 30+mainSeq.getInterval();
+//        OnNoteOn(0, seqNote, 127);
+//    }
     usbMIDI.read();
 }

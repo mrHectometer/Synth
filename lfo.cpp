@@ -44,6 +44,9 @@ void AudioSynthWaveformLfo::switchTable(uint8_t table)
             break;
     }
 }
+void AudioSynthWaveformLfo::setTarget(int target)
+{
+}
 ///////////////////////////////////////////////////////////////////////////////////////////
 void AudioSynthWaveformLfo::toggleWaveTable()
 {

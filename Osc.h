@@ -7,9 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 extern const float nMidiFrequency[];
 extern const int16_t sinTable[];
-extern const int16_t triTable[14][257];
-extern const int16_t sqrTable[14][257];
-extern const int16_t sawTable[14][257];
+extern const int16_t triTable[14][1025];
+extern const int16_t sqrTable[14][1025];
+extern const int16_t sawTable[14][1025];
 
 #define selectSinTable 0
 #define selectTriTable 1

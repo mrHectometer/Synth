@@ -29,6 +29,7 @@ public:
     virtual void update(void);
     void toggleWaveTable();
     void setWaveTable(int newTable);
+    void setTarget(int target);
 private:
     void switchTable(uint8_t table);  
     uint32_t phase;
