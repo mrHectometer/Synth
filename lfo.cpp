@@ -21,8 +21,7 @@ void AudioSynthWaveformLfo::frequency(float f)
 	phaseInc =  (f / AUDIO_SAMPLE_RATE_EXACT) * 4294967296.0f;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
-//een wavetable selecteren (2 dimensionele array)
-//in:  harmonic order index (which lookup table to choose)
+//Selecting a wavetable
 //in:  table
 //out: void
 //mod: pWavetable (array pointer)
@@ -44,9 +43,6 @@ void AudioSynthWaveformLfo::switchTable(uint8_t table)
             break;
     }
 }
-void AudioSynthWaveformLfo::setTarget(int target)
-{
-}
 ///////////////////////////////////////////////////////////////////////////////////////////
 void AudioSynthWaveformLfo::toggleWaveTable()
 {
@@ -58,6 +54,18 @@ void AudioSynthWaveformLfo::setWaveTable(int newTable)
 {
     selectTable=newTable;
     switchTable(selectTable);
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+//lfo destination
+void setDestination(int newDest)
+{
+    dest = newDest;
+}
+void toggleDestination()
+{
+    dest+=1;
+    if(dest > lfoDest_Max)
+        dest = lfoDest_Min;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 void AudioSynthWaveformLfo::update(void)
