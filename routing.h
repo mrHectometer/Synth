@@ -3,19 +3,7 @@
 
 #include "audiostream.h"
 
-///////////////////////////////////////////////////////////////////////////////////////////
-//lfo destination
-//0 = frequentie osc1 
-//1 = frequentie osc1 + osc2
-//2 = amplitude aEnv
-//3 = pulsewidth?
-//4 = filter
-int lfoMode = 0;
-const int lfoMode_Osc1f = 0;
-const int lfoMode_Osc12f = 1;
-const int lfoMode_aEnv = 2;
-const int lfoMode_PW = 3;
-const int lfoMode_fFreq = 3;
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 //audio streams and connections
 //1 lfo. helemaal vooraan, omdat hij moet kunnen fm-en

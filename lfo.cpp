@@ -57,15 +57,19 @@ void AudioSynthWaveformLfo::setWaveTable(int newTable)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 //lfo destination
-void setDestination(int newDest)
+void setDest(int newDest)
 {
     dest = newDest;
 }
-void toggleDestination()
+void toggleDest(int newDest)
 {
-    dest+=1;
+    dest++;
     if(dest > lfoDest_Max)
         dest = lfoDest_Min;
+}
+int getDest()
+{
+    return dest;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 void AudioSynthWaveformLfo::update(void)

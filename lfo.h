@@ -14,6 +14,24 @@ extern const int16_t lfoSawTable[257];
 #define selectTriTable 1
 #define selectSqrTable 2
 #define selectSawTable 3
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//lfo destination
+//0 = frequentie osc1 
+//1 = frequentie osc1 + osc2
+//2 = amplitude aEnv
+//3 = pulsewidth?
+//4 = filter
+int lfoDest_Min = 0;
+int lfoDest_Max = 4;
+
+
+int lfoDest = 0;
+const int lfoDest_Osc1f = 0;
+const int lfoDest_Osc12f = 1;
+const int lfoDest_aEnv = 2;
+const int lfoDest_PW = 3;
+const int lfoDest_fFreq = 4;
 ///////////////////////////////////////////////////////////////////////////////////////////
 class AudioSynthWaveformLfo : public AudioStream
 {
@@ -30,12 +48,16 @@ public:
     void toggleWaveTable();
     void setWaveTable(int newTable);
     void setTarget(int target);
+    void setDest(int newDest);
+    void toggleDest();
+    int getDest();
 private:
     void switchTable(uint8_t table);  
     uint32_t phase;
     uint32_t phaseInc;
     int32_t magnitude;
     int selectTable;
+    int dest;
     const int16_t *pWaveTable = lfoSinTable;
 };
 
