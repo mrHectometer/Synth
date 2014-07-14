@@ -4,23 +4,23 @@ AudioSynthSequencer::AudioSynthSequencer()
 {
     notes[0] = 12;
     notes[1] = 0;
-    notes[2] = 0;
+    notes[2] = 3;
     notes[3] = 12;
     
-    notes[4] = 0;
+    notes[4] = 7;
     notes[5] = 0;
-    notes[6] = 10;
-    notes[7] = 0;
+    notes[6] = 12;
+    notes[7] = 7;
     
-    notes[8] = 12;
-    notes[9] = 0;
-    notes[10] = 0;
-    notes[11] = 10;
+    notes[8] = 0;
+    notes[9] = 12;
+    notes[10] = 3;
+    notes[11] = 0;
     
-    notes[12] = 0;
-    notes[13] = 0;
-    notes[14] = 8;
-    notes[15] = 0;   
+    notes[12] = 12;
+    notes[13] = 3;
+    notes[14] = 12;
+    notes[15] = 7;   
     internalStep = 0;
 }
 

@@ -16,8 +16,9 @@ AudioEffectEnvelope aEnv;
 AudioEffectEnvelope fEnv;
 
 int ToneFilter[]={0,0,0,0,0,0,0,0x80000000,0,0,0,0,0,0,0,0}; // defines 2 sets of coefficients, not sure max possible in
+
 int updateFilter[5];
-AudioFilterBiquad    mainFilter(ToneFilter);
+AudioFilterBiquad    mainFilter (ToneFilter);
 
 AudioMixer4 OscMixer;
 
@@ -37,10 +38,7 @@ AudioConnection c1(Osc1,0,OscMixer,0);
 AudioConnection c2(Osc2,0,OscMixer,1);
 AudioConnection c3(Osc3,0,OscMixer,2);
 AudioConnection c40(OscMixer,aEnv);
-AudioConnection c41(aEnv,mainFilter);
-
-
-AudioConnection c60(mainFilter,dac);
+AudioConnection c60(aEnv ,dac);
 
 
 //lfo to filter

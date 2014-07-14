@@ -2,6 +2,9 @@
 #define DEBBIE
 #include "debugUtils.h"
 
+extern const int lfoDest_Min = 0;
+extern const int lfoDest_Max = 4;
+extern const int lfoDest = 0;
 
 const int TableSize = 257;
 const int TableSizeBits = 8;
@@ -57,17 +60,17 @@ void AudioSynthWaveformLfo::setWaveTable(int newTable)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 //lfo destination
-void setDest(int newDest)
+void AudioSynthWaveformLfo::setDest(int newDest)
 {
     dest = newDest;
 }
-void toggleDest(int newDest)
+void AudioSynthWaveformLfo::toggleDest()
 {
     dest++;
     if(dest > lfoDest_Max)
         dest = lfoDest_Min;
 }
-int getDest()
+int AudioSynthWaveformLfo::getDest()
 {
     return dest;
 }

@@ -27,12 +27,12 @@
 //the sustain accepts a float from 0 to 1 (no sustain to full sustain)
 void AudioEffectEnvelope::setAttack(float mSeconds)
 {
-    if(mSeconds < 1 || mSeconds > ENV_MAX_ATTACK) return;
+    if(mSeconds < 0.1 || mSeconds > ENV_MAX_ATTACK) return;
     attackInc = 4294967295/(AUDIO_SAMPLE_RATE_EXACT*mSeconds*0.001);
 }
 void AudioEffectEnvelope::setDecay(float mSeconds)
 {
-    if(mSeconds < 1 || mSeconds > ENV_MAX_DECAY) return;
+    if(mSeconds < 0.1 || mSeconds > ENV_MAX_DECAY) return;
     decayDec = 4294967295/(AUDIO_SAMPLE_RATE_EXACT*mSeconds*0.001);
 }
 void AudioEffectEnvelope::setSustain(float level)
@@ -42,7 +42,7 @@ void AudioEffectEnvelope::setSustain(float level)
 }
 void AudioEffectEnvelope::setRelease(float mSeconds)
 {
-    if(mSeconds < 1 || mSeconds > ENV_MAX_RELEASE) return;
+    if(mSeconds < 0.1 || mSeconds > ENV_MAX_RELEASE) return;
     releaseDec = 4294967295/(AUDIO_SAMPLE_RATE_EXACT*mSeconds*0.001);
 }
 void AudioEffectEnvelope::update(void)
@@ -97,6 +97,10 @@ void AudioEffectEnvelope::update(void)
         }
         val = envLevel >> 16;//envLevel is 32 bits en gebruikt de hele range.
         sample = block->data[i];
+        if(i == 0)
+        {
+          firstvalue = sample;
+        }
         sample = (sample * val) >> 16;
         block->data[i] = sample;
     }

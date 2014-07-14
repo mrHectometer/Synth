@@ -73,6 +73,7 @@ public:
     void setSustain(float level);//float form 0.0 to 1.0
     void setRelease(float mSeconds);
     virtual void update(void);
+    uint16_t firstvalue;
 private:
     audio_block_t *inputQueueArray[1];
     uint8_t currentState;

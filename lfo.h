@@ -22,11 +22,11 @@ extern const int16_t lfoSawTable[257];
 //2 = amplitude aEnv
 //3 = pulsewidth?
 //4 = filter
-int lfoDest_Min = 0;
-int lfoDest_Max = 4;
+extern const int lfoDest_Min;
+extern const int lfoDest_Max;
 
 
-int lfoDest = 0;
+extern const int lfoDest;
 const int lfoDest_Osc1f = 0;
 const int lfoDest_Osc12f = 1;
 const int lfoDest_aEnv = 2;
