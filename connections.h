@@ -1,5 +1,5 @@
-#ifndef routing_h
-#define routing_h
+#ifndef connections_h
+#define connections_h
 
 #include "audiostream.h"
 
@@ -47,5 +47,5 @@ AudioConnection c101(fEnv,0,LfoFilterMixer,1);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-#endif
+#endif //connections_h
 

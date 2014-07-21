@@ -18,7 +18,7 @@
 #include "osc.h"
 #include "env.h"
 #include "pow.h"
-#include "routing.h"
+#include "connections.h"
 ///////////////////////////////////////////////////////////////////////////////////////////
 AudioSynthSequencer mainSeq;
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,6 @@ float   filterRes = 5;
 uint8_t seqToggle = 0;
 void OnControlChange(byte channel, byte control, byte value)
 {
-     //if(control == 0) Osc1.toggleWaveTable();//sin tri sqr saw
     if(control == 4)
     {
         Osc1.setGlideStep(fPow100((float)value/127.0, 5000));
