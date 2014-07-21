@@ -1,4 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
+//lfo class for altering parameters of other synthesizer components
+///////////////////////////////////////////////////////////////////////////////////////////
 #ifndef lfo_h
 #define lfo_h
 #include "audiostream.h"
@@ -21,7 +23,7 @@ extern const int16_t lfoSawTable[257];
 //1 = frequentie osc1 + osc2
 //2 = amplitude aEnv
 //3 = pulsewidth?
-//4 = filter
+//4 = filter frequency
 extern const int lfoDest_Min;
 extern const int lfoDest_Max;
 
@@ -48,16 +50,16 @@ public:
     void toggleWaveTable();
     void setWaveTable(int newTable);
     void setTarget(int target);
-    void setDest(int newDest);
-    void toggleDest();
-    int getDest();
+    void setDestination(int newDest);
+    void toggleDestination();
+    int getDestination();
 private:
     void switchTable(uint8_t table);  
     uint32_t phase;
     uint32_t phaseInc;
     int32_t magnitude;
     int selectTable;
-    int dest;
+    int destination;
     const int16_t *pWaveTable = lfoSinTable;
 };
 

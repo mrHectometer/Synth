@@ -60,19 +60,19 @@ void AudioSynthWaveformLfo::setWaveTable(int newTable)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 //lfo destination
-void AudioSynthWaveformLfo::setDest(int newDest)
+void AudioSynthWaveformLfo::setDestination(int newDest)
 {
-    dest = newDest;
+    destination = newDest;
 }
-void AudioSynthWaveformLfo::toggleDest()
+void AudioSynthWaveformLfo::toggleDestination()
 {
-    dest++;
-    if(dest > lfoDest_Max)
-        dest = lfoDest_Min;
+    destination++;
+    if(destination > lfoDest_Max)
+        destination = lfoDest_Min;
 }
-int AudioSynthWaveformLfo::getDest()
+int AudioSynthWaveformLfo::getDestination()
 {
-    return dest;
+    return destination;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 void AudioSynthWaveformLfo::update(void)
@@ -90,7 +90,7 @@ void AudioSynthWaveformLfo::update(void)
         for (i=0; i < AUDIO_BLOCK_SAMPLES; i++) 
         {          
             index = ph >> (32-TableSizeBits);
-            //lineaire interpolatie tussen het huidige en het volgende sampeltje
+            //lineair interpolate between 2 samples. perhaps this doesn´t have to be done, it is only an lfo. you won´t hear a lotta noise.
             val1 = pWaveTable[index];
             val2 = pWaveTable[index+1];
             scale = (ph >> TableSizeBits) & 0xFFFF;
