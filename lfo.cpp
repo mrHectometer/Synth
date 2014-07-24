@@ -1,5 +1,4 @@
 #include "lfo.h"
-#define DEBBIE
 #include "debugUtils.h"
 
 extern const int lfoDest_Min = 0;

@@ -34,8 +34,8 @@ public:
     void setWaveTable(int newTable);
     void setfDetune(int cents);
     void setcDetune(int notes);
-    void setGlideStep(float mSeconds);
-    void phaseIncGlide();
+    void setGlideTime(float mSeconds);
+    uint32_t phaseIncGlide(int num_samples);
     void setFMAmount(float value);
     void setRMAmount(float value);
     void setDetunatorAmount(int value);
