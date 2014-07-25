@@ -51,7 +51,7 @@ void AudioEffectEnvelope::update(void)
     uint32_t i;
     int32_t  val, sample;
 
-    block = receiveWritable();
+    block = allocate();
     if(!block) return;
     for (i=0; i < AUDIO_BLOCK_SAMPLES; i++) 
     {
@@ -101,14 +101,13 @@ void AudioEffectEnvelope::update(void)
         {
           currentState = ENVSTATE_SILENT;
         }
-        val = envLevel >> 16;//envLevel is 32 bits en gebruikt de hele range.
-        sample = block->data[i];
+        
+        val = envLevel >> 17;//envLevel is 32 bits en gebruikt de hele range. (moet naar 16 bits, signed)
         if(i == 0)
         {
-          firstvalue = sample;
+          firstvalue = val;
         }
-        sample = (sample * val) >> 16;
-        block->data[i] = sample;
+        block->data[i] = val;
     }
     transmit(block);
     release(block);

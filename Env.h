@@ -49,7 +49,7 @@ const uint32_t  ENV_MAX_RELEASE = 20000;//in milliseconds
 class AudioEffectEnvelope : public AudioStream
 {
 public:
-    AudioEffectEnvelope() : AudioStream(1, inputQueueArray)
+    AudioEffectEnvelope() : AudioStream(0, NULL)
     {
         envLevel = 0;
         //some init values.
@@ -79,7 +79,6 @@ public:
     }
     uint16_t firstvalue;
 private:
-    audio_block_t *inputQueueArray[1];
     uint8_t currentState;
     uint32_t envLevel;
     uint32_t attackInc;

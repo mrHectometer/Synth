@@ -20,6 +20,7 @@
 #include "osc.h"
 #include "env.h"
 #include "pow.h"
+#include "DigipotFilter.h"
 #include "connections.h"
 #include "midiHandler.h"
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +32,7 @@ void setup()
     digitalPotInit();
     SPI.begin(); 
     SPI.setClockDivider(SPI_CLOCK_DIV32);
-    AudioMemory(18);
+    AudioMemory(25);
 
     Serial.begin(9600);
     dac.analogReference(INTERNAL);
@@ -40,6 +41,11 @@ void setup()
     aEnv.setDecay(40.0);
     aEnv.setSustain(0.6);
     aEnv.setRelease(20.0);
+    
+    fEnv.setAttack(0.5);
+    fEnv.setDecay(40.0);
+    fEnv.setSustain(0.6);
+    fEnv.setRelease(20.0);
 
     Osc1.setGlideTime(150);
     Osc1.setfDetune(0);
@@ -68,19 +74,22 @@ elapsedMillis t;
 int8_t seqNote = 0;
 void loop()
 { 
-    digitalPot1Write(filterFreq);
-    if(e > 500)
+    digitalPot1Write(fEnv.firstvalue>>7);
+    
+    //digitalPot1Write(filterFreq);
+    if(e > 100)
     {
-      DEBUG_PRINT1("filterFreq", filterFreq);
-        e-=500;
+        e-=100;
+        DEBUG_PRINT1("fEnv.firstvalue>>7", fEnv.firstvalue>>7);
     }
     if(seqToggle > 0)
     {
+        
         if(t > 140)
         {
             t-=140;
             OnNoteOff(0, seqNote, 127);
-            seqNote = 40+mainSeq.getInterval();
+            seqNote = 50+mainSeq.getInterval();
             OnNoteOn(0, seqNote, 127);
         }
     }

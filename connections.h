@@ -14,7 +14,8 @@ AudioSynthWaveformOsc Osc2;
 AudioSynthWaveformOsc Osc3;
 AudioEffectEnvelope aEnv;
 AudioEffectEnvelope fEnv;
-
+AudioMultiplier2 VCA;
+AudioSynthDigiFilter VCF;
 AudioMixer4 OscMixer;
 
 AudioMixer4 LfoFilterMixer;
@@ -32,9 +33,11 @@ AudioConnection c113(LfoOsc1Mixer,0,Osc2,0);//Osc2 is modulated by Osc1
 AudioConnection c1(Osc1,0,OscMixer,0);
 AudioConnection c2(Osc2,0,OscMixer,1);
 AudioConnection c3(Osc3,0,OscMixer,2);
-AudioConnection c40(OscMixer,aEnv);
-AudioConnection c60(aEnv ,dac);
+AudioConnection c40(OscMixer,0,VCA,0);
+AudioConnection c41(aEnv,0,VCA,1);
+AudioConnection c60(VCA ,dac);
 
+AudioConnection c70(fEnv,0,VCF,0);//filter envelope
 
 //lfo to filter
 AudioConnection c100(Lfo1,0,LfoFilterMixer,0);

@@ -1,6 +1,51 @@
 #ifndef midihandler_h
 #define midihandler_h
-
+//loaned from rockit
+//@ Created by Matt Heins, HackMe Electronics, 2011
+static int antilog(uint8_t uc_linear)
+{
+    uint8_t uc_index;
+    uc_index = uc_linear >> 5;//Divide down to 8 segments
+    switch (uc_index)
+    {
+        case 0://0-31 -> 0-124
+	     return uc_linear * 4;
+	     break;
+        case 1://32-63 -> 128-252
+	    return uc_linear*4;
+	    break;
+	case 2://64-95 -> 254-316 
+	    uc_linear = uc_linear - 63;
+	    return 252 + uc_linear*2;
+	    break;
+	case 3://96-127 ->316-380
+	    uc_linear = uc_linear - 95;
+	    return 316 + uc_linear*2;
+	    break;
+	case 4://128-159 ->380-412
+	    uc_linear = 255 - uc_linear;
+	    return 511 - uc_linear;
+	    break;
+	case 5://160-191 ->413-444
+	    /*We want the highest region to be linear 9 bit*/
+	    uc_linear = 255 - uc_linear;
+	    return 511 - uc_linear;
+	    break;
+	case 6://191-222 ->445-476
+	    /*We want the highest region to be linear 9 bit*/
+	    uc_linear = 255 - uc_linear;
+	    return 511 - uc_linear;
+	    break;
+	case 7://223-255 ->479-511
+	        /*We want the highest region to be linear 9 bit*/
+		uc_linear = 255 - uc_linear;
+		return 511 - uc_linear;
+		break;
+        default:	
+		return 511;
+		break;	
+	}
+}
 ///////////////////////////////////////////////////////////////////////////////////////////
 //midi functions
 
@@ -13,8 +58,8 @@ void OnNoteOn(byte channel, byte note, byte velocity)
     const int noteMin = 16;
     const int noteMax = 93;
     
-    DEBUG_PRINT1("midinote ", note);
-    DEBUG_PRINT1("frequency", nMidiFrequency[note]);
+//    DEBUG_PRINT1("midinote ", note);
+//    DEBUG_PRINT1("frequency", nMidiFrequency[note]);
     if(note > noteMax || note < noteMin) return; 
 
     if(currentNote == 0 
@@ -24,6 +69,7 @@ void OnNoteOn(byte channel, byte note, byte velocity)
         Osc2.setNote(note,false);
         Osc3.setNote(note,false);
         aEnv.noteOn();
+        fEnv.noteOn();
     }
     else
     {
@@ -39,6 +85,7 @@ void OnNoteOff(byte channel, byte note, byte velocity)
         return;
     currentNote = 0;
     aEnv.noteOff();
+    fEnv.noteOff();
 }
 void mix_oscs(AudioMixer4 Mixer, float osc12Mix, float subOscMix)
 {
@@ -79,6 +126,11 @@ void OnControlChange(byte channel, byte control, byte value)
     if(control == 81) aEnv.setDecay(fPow100((float)value/127.0, 5000));
     if(control == 82) aEnv.setSustain( (float)value/127.0);
     if(control == 83) aEnv.setRelease(fPow100((float)value/127.0, 5000));
+    //fEnv
+    if(control == 85) fEnv.setAttack(fPow100((float)value/127.0, 5000));
+    if(control == 86) fEnv.setDecay(fPow100((float)value/127.0, 5000));
+    if(control == 87) fEnv.setSustain( (float)value/127.0);
+    if(control == 88) fEnv.setRelease(fPow100((float)value/127.0, 5000));
     //mixer
     if(control == 100)
     {
@@ -95,9 +147,12 @@ void OnControlChange(byte channel, byte control, byte value)
     //if(control == 121) filterFreq = fPow100((float)value/127.0, 255.0);
     if(control == 121)
     {
-        filterFreq = value*2;
+        filterFreq = antilog(value*2)/2;
     } 
-    if(control == 122) filterRes = 0.1+value*(6.0/127.0);
+    if(control == 122) 
+    {
+        digitalPotResWrite(antilog(value*2)/2);
+    }
     
     if(control == 127) seqToggle = value;
     //lfo

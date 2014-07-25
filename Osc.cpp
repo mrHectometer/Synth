@@ -162,6 +162,7 @@ float OscNoteFrequency(int midiNote, int cDetune, int fDetune, int fModulation, 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void AudioSynthWaveformOsc::setNote(int note, boolean glide)
 {
+    phase = 0;//the phases of multiple oscillators would get out of sync...
     //copy midi, frequency and phase incremnt to old note (glide from note)
     fromMidiNote = note;
     midiNote = note;
@@ -334,7 +335,7 @@ int16_t LinearSample(const int16_t *pWaveTable, uint32_t ph, int TableSizeBits, 
 void AudioSynthWaveformOsc::update(void)
 {
     audio_block_t *block, *modInput;
-    uint32_t i, ph, inc, index, scale;
+    uint32_t i, j, ph, inc, index, scale;
     int32_t val1, val2, fminc, sample;
     int16_t mod;
     
@@ -347,8 +348,8 @@ void AudioSynthWaveformOsc::update(void)
     	ph = phase;
     	inc = phaseIncGlide(128);
     
-        for(int i = 0;i < 6; i++)
-            phd[i] = phaseD[i];
+        for(int j = 0;j < 6; j++)
+            phd[j] = phaseD[j];
         for (i=0; i < AUDIO_BLOCK_SAMPLES; i++) 
         {
 	    sample = LinearSample(pWaveTable, ph, TableSizeBits, magnitude);
@@ -356,11 +357,11 @@ void AudioSynthWaveformOsc::update(void)
             if(detunatorAmount > 0)
             {
                 sample>>=2;//divide by 4, faster than division
-                for(int i = 0;i < 6; i++)
+                for(int j = 0;j < 6; j++)
                 {
-                    dInc = ((uint64_t)inc*detunatorMul[i]) >> 31;
-                    phd[i] += dInc;
-                    sample += LinearSample(pWaveTable, phd[i], TableSizeBits, magnitude>>2);
+                    dInc = ((uint64_t)inc*detunatorMul[j]) >> 31;
+                    phd[j] += dInc;
+                    sample += LinearSample(pWaveTable, phd[j], TableSizeBits, magnitude>>2);
                 }
             }
             //write a sample to the buffer
@@ -372,8 +373,7 @@ void AudioSynthWaveformOsc::update(void)
                 mod = modInput->data[i];
                 //mod = ((int32_t)mod*fmAmount)>>15;
                 fminc = multiply_32x32_rshift32(inc, mod * fmAmount) << 1;
-                for(int i = 0;i < 12; i++)
-                    ph +=fminc;
+                ph +=fminc<<4;
             }
 	}
         phaseInc = inc;
