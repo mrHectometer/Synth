@@ -52,7 +52,7 @@ void AudioEffectEnvelope::update(void)
     int32_t  val, sample;
 
     block = receiveWritable();
-    
+    if (!block) return;
     for (i=0; i < AUDIO_BLOCK_SAMPLES; i++) 
     {
         switch(currentState)
@@ -78,9 +78,8 @@ void AudioEffectEnvelope::update(void)
                 envLevel = sustainLevel;//clippen naar de grens
             }
             break; 
-            //sustain: gewoon sustainlevel volgen  
+            //sustain: gewoon niksen    
         case ENVSTATE_SUSTAIN:
-            envLevel = sustainLevel;//clippen naar de grens
             break;    
             //release: afname tot we een underflow hebben.
             //in dat geval gaan we naar de silent fase    
@@ -95,11 +94,6 @@ void AudioEffectEnvelope::update(void)
             //default: niksdoen    
         default:
             break;
-        }
-        //check at the end: is the envelope silent? Set silent state
-        if(envLevel == 0)
-        {
-          currentState = ENVSTATE_SILENT;
         }
         val = envLevel >> 16;//envLevel is 32 bits en gebruikt de hele range.
         sample = block->data[i];

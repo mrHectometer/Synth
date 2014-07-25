@@ -15,6 +15,11 @@ AudioSynthWaveformOsc Osc3;
 AudioEffectEnvelope aEnv;
 AudioEffectEnvelope fEnv;
 
+int ToneFilter[]={0,0,0,0,0,0,0,0x80000000,0,0,0,0,0,0,0,0}; // defines 2 sets of coefficients, not sure max possible in
+
+int updateFilter[5];
+AudioFilterBiquad    mainFilter (ToneFilter);
+
 AudioMixer4 OscMixer;
 
 AudioMixer4 LfoFilterMixer;

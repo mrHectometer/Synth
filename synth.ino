@@ -22,6 +22,8 @@
 #include "midiHandler.h"
 ///////////////////////////////////////////////////////////////////////////////////////////
 AudioSynthSequencer mainSeq;
+///////////////////////////////////////////////////////////////////////////////////////////
+//midi functions
 
 int settingDetune;
 int settingOldDetune;
@@ -50,23 +52,23 @@ void setup()
     AudioMemory(18);
 
     Serial.begin(9600);
-    dac.analogReference(INTERNAL);
-    mix_oscs(OscMixer, control_oscs_mix, control_subosc_mix);
+//    dac.analogReference(EXTERNAL);  qj  
+    mix_oscs(control_oscs_mix, control_subosc_mix);
     aEnv.setAttack(2.0);
     aEnv.setDecay(40.0);
     aEnv.setSustain(0.6);
     aEnv.setRelease(20.0);
 
-    Osc1.setGlideTime(500);
+    Osc1.setGlideStep(50);
     Osc1.setfDetune(0);
     Osc1.setcDetune(0);
     Osc1.setDetunatorAmount(0);
-    Osc3.setGlideTime(500);
+    Osc3.setGlideStep(50);
     Osc2.setfDetune(0);
     Osc2.setcDetune(0);
     Osc2.setDetunatorAmount(0);
     
-    Osc2.setGlideTime(500);
+    Osc2.setGlideStep(50);
     Osc3.setcDetune(-12);
     
     Osc1.setWaveTable(selectSawTable);
@@ -80,6 +82,10 @@ void setup()
     usbMIDI.setHandleNoteOff(OnNoteOff);
     usbMIDI.setHandleNoteOn(OnNoteOn);
     usbMIDI.setHandleControlChange(OnControlChange);
+     // calcBiquad(FilterType   ,FrequencyC ,dBgain    ,Q      ,QuantizationUnit  ,SampleRate    ,int*);
+    calcBiquad(FILTER_LOPASS    ,filterFreq        ,0         ,filterRes    ,2147483648        ,44100         ,updateFilter);
+    mainFilter.updateCoefs(0,updateFilter); // default set updateCoefs(0,updateFilter);
+    mainFilter.updateCoefs(1,updateFilter); // default set updateCoefs(0,updateFilter);
 }
 elapsedMillis e;
 elapsedMillis t;
@@ -90,6 +96,8 @@ void loop()
     if(e > 500)
     {
       DEBUG_PRINT1("filterFreq", filterFreq);
+        //DEBUG_PRINT1("AudioProcessorUsageMax()", AudioProcessorUsageMax());
+        //DEBUG_PRINT1("Osc1.processorUsageMax()", Osc1.processorUsageMax());
         e-=500;
     }
     if(seqToggle > 0)

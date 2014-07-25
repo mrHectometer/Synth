@@ -235,15 +235,14 @@ void AudioSynthWaveformOsc::setcDetune(int notes)
 //detunator: makes a supersaw effect by adding 2 extra 
 void AudioSynthWaveformOsc::setDetunatorAmount(int value)
 {
-    
     detunatorAmount = value;
-    __disable_irq();
     detunatorMul[0] = detuneFrequency[100+value] * 2147483648;
     detunatorMul[1] = detuneFrequency[100+(value/2)-2] * 2147483648;
     detunatorMul[2] = detuneFrequency[100+(value/4)-3] * 2147483648;
     detunatorMul[3] = detuneFrequency[100-value] * 2147483648;
     detunatorMul[4] = detuneFrequency[100-(value/2)+1] * 2147483648;
     detunatorMul[5] = detuneFrequency[100-(value/4)+5] * 2147483648;
+    __disable_irq();
     __enable_irq();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -260,7 +259,7 @@ void AudioSynthWaveformOsc::setFMAmount(float value)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 //set the speed of the glide
-void AudioSynthWaveformOsc::setGlideTime(float mSeconds)
+void AudioSynthWaveformOsc::setGlideStep(float mSeconds)
 {
     if(mSeconds < 1 || mSeconds > 20000) return;
     glideStep = 4294967295/(AUDIO_SAMPLE_RATE_EXACT*mSeconds*0.001);
@@ -273,25 +272,22 @@ uint32_t unsigned_multiply_32x32_rshift32(uint32_t a,uint32_t b)
     return o;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
-//num samples:
-//you can call the function every sample, every other, or once in 128 samples.
-//this is a correction factor
-uint32_t AudioSynthWaveformOsc::phaseIncGlide(int num_samples)
+void AudioSynthWaveformOsc::phaseIncGlide()
 {
     if(glideAccu == 0xFFFFFFFF)
     {
-        //phaseInc = phaseIncNote;
-        return phaseIncNote;
+        phaseInc = phaseIncNote;
+        return;
     }
     uint32_t val1,val2;
-    //lat the glide Accumulator increase
-    glideAccu+=glideStep*num_samples;
-    if(glideAccu < glideStep*num_samples) //overflow
+    //glideAccu laten toenemen
+    glideAccu+=glideStep;
+    if(glideAccu < glideStep) //overflow
         glideAccu = 0xFFFFFFFF;
         
     val1 = unsigned_multiply_32x32_rshift32(0xFFFFFFFF-glideAccu, phaseIncFromNote);
     val2 = unsigned_multiply_32x32_rshift32(glideAccu, phaseIncNote);
-    return (val1>>1)+(val2>>1);
+    phaseInc = (val1>>1)+(val2>>1);
 }
 int16_t LinearSample(const int16_t *pWaveTable, uint32_t ph, int TableSizeBits, int32_t magnitude)
 {
@@ -322,17 +318,22 @@ void AudioSynthWaveformOsc::update(void)
     if (block) 
     {
     	ph = phase;
-    	inc = phaseIncGlide(128);
+    	inc = phaseInc;
     
         for(int i = 0;i < 6; i++)
             phd[i] = phaseD[i];
+        
+            
+        //no input routed: no fm / rm
+
         for (i=0; i < AUDIO_BLOCK_SAMPLES; i++) 
         {
+            
 	    sample = LinearSample(pWaveTable, ph, TableSizeBits, magnitude);
-            //detunator: to make supersaws
+            //detunator: om supersaws te maken
             if(detunatorAmount > 0)
             {
-                sample>>=2;//divide by 4, faster than division
+                sample>>=2;
                 for(int i = 0;i < 6; i++)
                 {
                     dInc = ((uint64_t)inc*detunatorMul[i]) >> 31;
@@ -340,10 +341,11 @@ void AudioSynthWaveformOsc::update(void)
                     sample += LinearSample(pWaveTable, phd[i], TableSizeBits, magnitude>>2);
                 }
             }
-            //write a sample to the buffer
+
             block->data[i] = sample;
+            phaseIncGlide();
 	    ph += inc;            
-          
+
             if(modInput && fmAmount > 0)
             {
                 mod = modInput->data[i];
@@ -353,7 +355,7 @@ void AudioSynthWaveformOsc::update(void)
                     ph +=fminc;
             }
 	}
-        phaseInc = inc;
+
         phase = ph;
         for(int i = 0;i < 6; i++)
             phaseD[i] = phd[i];
