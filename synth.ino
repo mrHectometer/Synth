@@ -12,7 +12,9 @@
 #include <Audio.h>
 #include <SPI.h>
 #define DEBBIE
+
 #include "debugUtils.h"
+#include "digipot.h"
 #include "Seq.h"
 #include "lfo.h"
 #include "osc.h"
@@ -23,28 +25,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 AudioSynthSequencer mainSeq;
 
-int settingDetune;
-int settingOldDetune;
-uint32_t filterTimecalc;
-uint32_t filterTimeset;
-//////////////////////////////////////////////////////////////////////////////////////////
-//digipot1
-const int slaveSelectPin = 10;
-void digitalPot1Write(int value) {
-  // take the SS pin low to select the chip:
-  digitalWriteFast(slaveSelectPin,LOW);
-  //  send in the address and value via spi:
-  //last 2 bits: pot select
-  //other 1: write command
-  SPI.transfer(0b00010011);
-  SPI.transfer(value);
-  // take the SS pin high to de-select the chip:
-  digitalWriteFast(slaveSelectPin,HIGH); 
-}
 //////////////////////////////////////////////////////////////////////////////////////////
 void setup()
 {
-    pinMode (slaveSelectPin, OUTPUT);
+    digitalPotInit();
     SPI.begin(); 
     SPI.setClockDivider(SPI_CLOCK_DIV32);
     AudioMemory(18);
@@ -52,21 +36,21 @@ void setup()
     Serial.begin(9600);
     dac.analogReference(INTERNAL);
     mix_oscs(OscMixer, control_oscs_mix, control_subosc_mix);
-    aEnv.setAttack(2.0);
+    aEnv.setAttack(0.5);
     aEnv.setDecay(40.0);
     aEnv.setSustain(0.6);
     aEnv.setRelease(20.0);
 
-    Osc1.setGlideTime(500);
+    Osc1.setGlideTime(150);
     Osc1.setfDetune(0);
     Osc1.setcDetune(0);
     Osc1.setDetunatorAmount(0);
-    Osc3.setGlideTime(500);
+    Osc3.setGlideTime(150);
     Osc2.setfDetune(0);
     Osc2.setcDetune(0);
     Osc2.setDetunatorAmount(0);
     
-    Osc2.setGlideTime(500);
+    Osc2.setGlideTime(150);
     Osc3.setcDetune(-12);
     
     Osc1.setWaveTable(selectSawTable);
@@ -96,7 +80,7 @@ void loop()
         {
             t-=140;
             OnNoteOff(0, seqNote, 127);
-            seqNote = 60+mainSeq.getInterval();
+            seqNote = 40+mainSeq.getInterval();
             OnNoteOn(0, seqNote, 127);
         }
     }
