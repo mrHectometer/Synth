@@ -110,4 +110,18 @@ void OnControlChange(byte channel, byte control, byte value)
     if(control == 141) Lfo1.frequency(fPow100((float)value/127.0, 20));
     if(control == 142) Lfo1.amplitude(fPow100((float)value/127.0, 1.0));
 }
+void onPitchBend(byte channel, int pitch)
+{
+    int newPitchBend = (pitch/82) -100;
+    Osc1.setPitchBend(newPitchBend);
+    Osc2.setPitchBend(newPitchBend);
+    Osc3.setPitchBend(newPitchBend);
+}
+void onMidiInit()
+{
+    usbMIDI.setHandleNoteOff(OnNoteOff);
+    usbMIDI.setHandleNoteOn(OnNoteOn);
+    usbMIDI.setHandleControlChange(OnControlChange);
+    usbMIDI.setHandlePitchChange(onPitchBend);
+}
 #endif

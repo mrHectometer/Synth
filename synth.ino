@@ -77,9 +77,7 @@ void setup()
     Lfo1.amplitude(.0);
     Osc2.setFMAmount(0.0);
     //initialize usbMIDI
-    usbMIDI.setHandleNoteOff(OnNoteOff);
-    usbMIDI.setHandleNoteOn(OnNoteOn);
-    usbMIDI.setHandleControlChange(OnControlChange);
+    onMidiInit();
 }
 elapsedMillis e;
 elapsedMillis t;

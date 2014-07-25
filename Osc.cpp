@@ -154,6 +154,12 @@ void AudioSynthWaveformOsc::switchTable(uint8_t order, uint8_t table)
     }
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
+//returns the correct frequency for a given note, and detune
+float OscNoteFrequency(int midiNote, int cDetune, int fDetune, int fModulation, int pitchBend)
+{
+    return nMidiFrequency[midiNote+cDetune] * detuneFrequency[fDetune+100] * detuneFrequency[fModulation+100] * detuneFrequency[pitchBend+100]; 
+}
+///////////////////////////////////////////////////////////////////////////////////////////
 void AudioSynthWaveformOsc::setNote(int note, boolean glide)
 {
     //copy midi, frequency and phase incremnt to old note (glide from note)
@@ -162,7 +168,7 @@ void AudioSynthWaveformOsc::setNote(int note, boolean glide)
     fromNoteFrequency = noteFrequency;
     fromNoteFrequency_phaseInc = noteFrequency_phaseInc;
     //set frequencies
-    noteFrequency = nMidiFrequency[midiNote+cDetune] * detuneFrequency[fDetune+100] * detuneFrequency[fModulation+100]; 
+    noteFrequency = OscNoteFrequency(midiNote, cDetune,  fDetune,  fModulation,  pitchBend); 
     noteFrequency_phaseInc = f2phaseInc(noteFrequency);
     orderIndex = selectOrdertable[midiNote+cDetune];
 
@@ -171,6 +177,7 @@ void AudioSynthWaveformOsc::setNote(int note, boolean glide)
     uint32_t glideAccuSet;
     if(glide == false)
     {
+        //the last note will be the current note (no gliding)
         fromMidiNote = note;
         fromNoteFrequency = noteFrequency;
         fromNoteFrequency_phaseInc = noteFrequency_phaseInc;
@@ -178,6 +185,8 @@ void AudioSynthWaveformOsc::setNote(int note, boolean glide)
     }
     else
     {
+        //just start gliding and see what happens
+        //the other variables are already set
         glideAccuSet = 0;
     }    
     __disable_irq();
@@ -204,11 +213,25 @@ void AudioSynthWaveformOsc::setWaveTable(int newTable)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 //detune:
+void AudioSynthWaveformOsc::setPitchBend(int cents)
+{
+    pitchBend = cents;
+    //nieuwe frequentie waar we naartoe gaan
+    noteFrequency = OscNoteFrequency(midiNote, cDetune,  fDetune,  fModulation,  pitchBend); 
+    noteFrequency_phaseInc = f2phaseInc(noteFrequency);
+    
+    //alleen de phase increment wordt aangepast
+    __disable_irq();
+    phaseIncNote = noteFrequency_phaseInc;
+    __enable_irq();
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+//detune:
 void AudioSynthWaveformOsc::setfDetune(int cents)
 {
     fDetune = cents;
     //nieuwe frequentie waar we naartoe gaan
-    noteFrequency = nMidiFrequency[midiNote+cDetune] * detuneFrequency[fDetune+100] * detuneFrequency[fModulation+100]; 
+    noteFrequency = OscNoteFrequency(midiNote, cDetune,  fDetune,  fModulation,  pitchBend); 
     noteFrequency_phaseInc = f2phaseInc(noteFrequency);
     
     //alleen de phase increment wordt aangepast
@@ -221,12 +244,12 @@ void AudioSynthWaveformOsc::setcDetune(int notes)
 {
     cDetune = notes;
     
-    noteFrequency = nMidiFrequency[midiNote+cDetune] * detuneFrequency[fDetune+100] * detuneFrequency[fModulation+100]; 
+    noteFrequency = OscNoteFrequency(midiNote, cDetune,  fDetune,  fModulation,  pitchBend); 
     noteFrequency_phaseInc = f2phaseInc(noteFrequency);
     orderIndex = selectOrdertable[midiNote+cDetune];
     
     __disable_irq();
-    phaseIncFromNote = fromNoteFrequency_phaseInc;
+ //   phaseIncFromNote = fromNoteFrequency_phaseInc;
     phaseIncNote = noteFrequency_phaseInc;
     switchTable(orderIndex, selectTable);
     __enable_irq();

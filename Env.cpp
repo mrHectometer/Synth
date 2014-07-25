@@ -52,7 +52,7 @@ void AudioEffectEnvelope::update(void)
     int32_t  val, sample;
 
     block = receiveWritable();
-    
+    if(!block) return;
     for (i=0; i < AUDIO_BLOCK_SAMPLES; i++) 
     {
         switch(currentState)

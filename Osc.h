@@ -32,6 +32,7 @@ public:
     virtual void update(void);
     void toggleWaveTable();
     void setWaveTable(int newTable);
+    void setPitchBend(int cents);
     void setfDetune(int cents);
     void setcDetune(int notes);
     void setGlideTime(float mSeconds);
@@ -66,6 +67,7 @@ private:
     uint32_t phaseD[6];
     int fDetune = 0;//fine (don't believe comments when they say they are fine)
     int cDetune = 0;//coarse
+    int pitchBend = 0;
     int fModulation = 0;//works the same as fDetune
     int selectTable;
     int orderIndex;//which LUT to use
