@@ -43,6 +43,18 @@ static int antilog(uint8_t uc_linear)
 		break;	
 	}
 }
+void AudioSynthDigiFilter::setFrequency(int value)
+{
+    freq = value;
+}
+void AudioSynthDigiFilter::setFilterType(int type)
+{
+    filterType = type;
+}
+void AudioSynthDigiFilter::setResonance(int value)
+{
+    res = value;
+}
 void AudioSynthDigiFilter::update(void)
 {
     audio_block_t *block;

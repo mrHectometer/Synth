@@ -40,6 +40,7 @@ public:
     void setFMAmount(float value);
     void setRMAmount(float value);
     void setDetunatorAmount(int value);
+    void setDetuneVariables(int coarseDetune, int fineDetune, int pitchBend, int modulation);
 private:
     void switchTable(uint8_t order, uint8_t table);
     

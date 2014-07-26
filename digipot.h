@@ -23,7 +23,7 @@ void digitalPotResWrite(int value) {
   //  send in the address and value via spi:
   //last 2 bits: pot select
   //other 1: write command
-  SPI.transfer(0b00010011);
+  SPI.transfer(0b00010001);
   SPI.transfer(value);
   // take the SS pin high to de-select the chip:
   digitalWriteFast(FilterRes1Pin,HIGH); 

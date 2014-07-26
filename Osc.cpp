@@ -162,7 +162,6 @@ float OscNoteFrequency(int midiNote, int cDetune, int fDetune, int fModulation, 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void AudioSynthWaveformOsc::setNote(int note, boolean glide)
 {
-    phase = 0;//the phases of multiple oscillators would get out of sync...
     //copy midi, frequency and phase incremnt to old note (glide from note)
     fromMidiNote = note;
     midiNote = note;
@@ -183,6 +182,7 @@ void AudioSynthWaveformOsc::setNote(int note, boolean glide)
         fromNoteFrequency = noteFrequency;
         fromNoteFrequency_phaseInc = noteFrequency_phaseInc;
         glideAccuSet = 0xFFFFFFFF;
+        phase = 0;//the phases of multiple oscillators would get out of sync...
     }
     else
     {
@@ -213,39 +213,9 @@ void AudioSynthWaveformOsc::setWaveTable(int newTable)
     selectTable=newTable;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
-//detune:
-void AudioSynthWaveformOsc::setPitchBend(int cents)
-{
-    pitchBend = cents;
-    //nieuwe frequentie waar we naartoe gaan
-    noteFrequency = OscNoteFrequency(midiNote, cDetune,  fDetune,  fModulation,  pitchBend); 
-    noteFrequency_phaseInc = f2phaseInc(noteFrequency);
-    
-    //alleen de phase increment wordt aangepast
-    __disable_irq();
-    phaseIncNote = noteFrequency_phaseInc;
-    __enable_irq();
-}
-///////////////////////////////////////////////////////////////////////////////////////////
-//detune:
-void AudioSynthWaveformOsc::setfDetune(int cents)
-{
-    fDetune = cents;
-    //nieuwe frequentie waar we naartoe gaan
-    noteFrequency = OscNoteFrequency(midiNote, cDetune,  fDetune,  fModulation,  pitchBend); 
-    noteFrequency_phaseInc = f2phaseInc(noteFrequency);
-    
-    //alleen de phase increment wordt aangepast
-    __disable_irq();
-    phaseIncNote = noteFrequency_phaseInc;
-    __enable_irq();
-}
-///////////////////////////////////////////////////////////////////////////////////////////
-void AudioSynthWaveformOsc::setcDetune(int notes)
-{
-    cDetune = notes;
-    
-    noteFrequency = OscNoteFrequency(midiNote, cDetune,  fDetune,  fModulation,  pitchBend); 
+void AudioSynthWaveformOsc::setDetuneVariables(int coarseDetune, int fineDetune, int pitchBend, int modulation)
+{  
+    noteFrequency = OscNoteFrequency(midiNote, coarseDetune,  fineDetune,  modulation,  pitchBend); 
     noteFrequency_phaseInc = f2phaseInc(noteFrequency);
     orderIndex = selectOrdertable[midiNote+cDetune];
     
@@ -256,10 +226,29 @@ void AudioSynthWaveformOsc::setcDetune(int notes)
     __enable_irq();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
+//detune:
+void AudioSynthWaveformOsc::setPitchBend(int cents)
+{
+    pitchBend = cents;
+    setDetuneVariables(cDetune, fDetune, pitchBend, fModulation);
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+//detune:
+void AudioSynthWaveformOsc::setfDetune(int cents)
+{
+    fDetune = cents;
+    setDetuneVariables(cDetune, fDetune, pitchBend, fModulation);
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+void AudioSynthWaveformOsc::setcDetune(int notes)
+{
+    cDetune = notes;
+    setDetuneVariables(cDetune, fDetune, pitchBend, fModulation);
+}
+///////////////////////////////////////////////////////////////////////////////////////////
 //detunator: makes a supersaw effect by adding 2 extra 
 void AudioSynthWaveformOsc::setDetunatorAmount(int value)
 {
-    
     detunatorAmount = value;
     __disable_irq();
     detunatorMul[0] = detuneFrequency[100+value] * 2147483648;
