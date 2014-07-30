@@ -19,8 +19,6 @@ AudioSynthDigiFilter VCF;
 AudioMixer4 OscMixer;
 
 AudioMixer4 LfoFilterMixer;
-//AudioEffectChorus Chorus;
-
 //op het laatst
 AudioOutputAnalog dac;
 //lfo1 naar osc1
@@ -38,11 +36,7 @@ AudioConnection c41(aEnv,0,VCA,1);
 AudioConnection c60(VCA ,dac);
 
 AudioConnection c70(fEnv,0,VCF,0);//filter envelope
-
-//lfo to filter
-AudioConnection c100(Lfo1,0,LfoFilterMixer,0);
-AudioConnection c101(fEnv,0,LfoFilterMixer,1);
-
+AudioConnection c71(Lfo1,0,VCF,1);//filter envelope
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 #endif //connections_h

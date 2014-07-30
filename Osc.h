@@ -29,6 +29,10 @@ public:
 	else if (n > 1.0) n = 1.0;
 	magnitude = n * 65536.0;
     }
+    void setMagnitude(uint16_t n) 
+    {
+	magnitude = n;
+    }
     virtual void update(void);
     void toggleWaveTable();
     void setWaveTable(int newTable);

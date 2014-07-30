@@ -76,6 +76,9 @@ void OnNoteOn(byte channel, byte note, byte velocity)
         Osc1.setNote(note,true);
         Osc2.setNote(note,true);
         Osc3.setNote(note,true);  
+        //Osc1.setMagnitude(velocity<<16); 
+        //Osc2.setMagnitude(velocity<<16); 
+        //Osc3.setMagnitude(velocity<<16); 
     }
     currentNote = note;
 }
@@ -147,13 +150,18 @@ void OnControlChange(byte channel, byte control, byte value)
     //if(control == 121) filterFreq = fPow100((float)value/127.0, 255.0);
     if(control == 121)
     {
-        filterFreq = antilog(value*2)/2;
+    //    filterFreq = antilog(value*2)/2;
+        VCF.setFrequency(antilog(value*2)/2);
+        DEBUG_PRINT1("antilog(value*2)/",antilog(value*2)*39);
     } 
     if(control == 122) 
     {
         digitalPotResWrite(antilog(value*2)/2);
     }
-    
+    if(control == 123) 
+    {
+        VCF.setEnvAmt(value<<8);
+    }
     if(control == 127) seqToggle = value;
     //lfo
     //eerste: toggle door de modes
@@ -162,8 +170,8 @@ void OnControlChange(byte channel, byte control, byte value)
     //2 = amplitude Aenv
     //3 = pulsewidth?
     //4 = filter
-    if(control == 141) Lfo1.frequency(fPow100((float)value/127.0, 20));
-    if(control == 142) Lfo1.amplitude(fPow100((float)value/127.0, 1.0));
+    if(control == 90) Lfo1.frequency(fPow100((float)value/127.0, 20));
+    if(control == 91) Lfo1.amplitude(fPow100((float)value/127.0, 1.0));
 }
 void onPitchBend(byte channel, int pitch)
 {

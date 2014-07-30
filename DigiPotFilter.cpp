@@ -1,4 +1,5 @@
 #include "DigipotFilter.h"
+
 static int antilog(uint8_t uc_linear)
 {
     uint8_t uc_index;
@@ -43,37 +44,59 @@ static int antilog(uint8_t uc_linear)
 		break;	
 	}
 }
-void AudioSynthDigiFilter::setFrequency(int value)
+void AudioSynthDigiFilter::setFrequency(uint16_t value)
 {
-    freq = value;
+    freq = value<<8;//scale to 0 to 65535
 }
-void AudioSynthDigiFilter::setFilterType(int type)
+void AudioSynthDigiFilter::setFiltertype(filtertype newvalue)
 {
-    filterType = type;
+    filterType = newvalue;
+    //output naar de multiplexer.
+    //neem een 2x4 multiplexer, voor 2 filters.
+    //plaats die dan niet op het filter board.
+    //of gewoon 2 van 8 kanalen, net zo goedkoop
 }
 void AudioSynthDigiFilter::setResonance(int value)
 {
     res = value;
 }
+void digitalPotWrite(int value) {
+  // take the SS pin low to select the chip:
+  digitalWriteFast(10,LOW);
+  //  send in the address and value via spi:
+  //last 2 bits: pot select
+  //other 1: write command
+  SPI.transfer(0b00010011);
+  SPI.transfer(value);
+  // take the SS pin high to de-select the chip:
+  digitalWriteFast(10,HIGH); 
+}
 void AudioSynthDigiFilter::update(void)
 {
-    audio_block_t *block;
-    uint32_t i;
-    int16_t pot1value = 255;
-    block = receiveReadOnly();
-    if (block) 
+    audio_block_t *block, *modBlock;
+    uint16_t envIn, baseFreq;
+    int16_t modIn;
+    uint8_t pot1value;
+    block = receiveReadOnly(0);
+    modBlock = receiveReadOnly(1);
+    if (block)
     {
-        //filterFreq = antilog(value*2)/2;
-        digitalWriteFast(freqPot1ChipSelect,LOW);
-        //  send in the address and value via spi:
-        //last 2 bits: pot select
-        //other 1: write command
-        SPI.transfer(0b00010011);
-        SPI.transfer(pot1value);
-        // take the SS pin high to de-select the chip:
-        digitalWriteFast(freqPot1ChipSelect,HIGH); 
-        //output only one frame
-	return;
+        if (modBlock)
+        {
+            //final frequency = baseFreq + envIn * envAmt + modIn * modAmt;
+            //following implementation isn't correct yet: negative envIns aren't possible
+            envIn = (block->data[64] * envAmt) >> 15;//32768 is the middle here, so we can have inverting and non in
+            modIn = (modBlock->data[64] * modAmt) >> 15;
+            baseFreq = freq;
+            int32_t totalfreq = baseFreq + envIn + modIn;
+            if(totalfreq > 65535) totalfreq = 65535;
+            if(totalfreq < 0) totalfreq = 0;
+            pot1value = totalfreq >> 8;
+            outvalue = pot1value;
+            digitalPotWrite(pot1value);
+        }
+        release(modBlock);
     }
+    release(block);
 }
 

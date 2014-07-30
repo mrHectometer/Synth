@@ -32,7 +32,7 @@ void setup()
     digitalPotInit();
     SPI.begin(); 
     SPI.setClockDivider(SPI_CLOCK_DIV32);
-    AudioMemory(25);
+    AudioMemory(30);
 
     Serial.begin(9600);
     dac.analogReference(INTERNAL);
@@ -64,7 +64,7 @@ void setup()
     Osc3.setWaveTable(selectSawTable);
     
     Lfo1.frequency(0.8);
-    Lfo1.amplitude(.0);
+    Lfo1.amplitude(.5);
     Osc2.setFMAmount(0.0);
     //initialize usbMIDI
     onMidiInit();
@@ -74,13 +74,15 @@ elapsedMillis t;
 int8_t seqNote = 0;
 void loop()
 { 
-    digitalPot1Write(fEnv.firstvalue>>7);
+ //   digitalPot1Write(fEnv.firstvalue>>7);
     
     //digitalPot1Write(filterFreq);
     if(e > 100)
     {
         e-=100;
-        DEBUG_PRINT1("fEnv.firstvalue>>7", fEnv.firstvalue>>7);
+        DEBUG_PRINT1("VCF.outvalue", VCF.outvalue);
+        DEBUG_PRINT1("VCF.freq", VCF.freq);
+        DEBUG_PRINT1("VCF.res", VCF.res);
     }
     if(seqToggle > 0)
     {
