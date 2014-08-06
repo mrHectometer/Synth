@@ -32,10 +32,12 @@ void setup()
     digitalPotInit();
     SPI.begin(); 
     SPI.setClockDivider(SPI_CLOCK_DIV32);
-    AudioMemory(30);
+    AudioMemory(40);
 
     Serial.begin(9600);
     dac.analogReference(INTERNAL);
+    control_oscs_mix = 0.5;
+    control_subosc_mix = 0.5;
     mix_oscs(OscMixer, control_oscs_mix, control_subosc_mix);
     aEnv.setAttack(0.5);
     aEnv.setDecay(40.0);
@@ -51,17 +53,17 @@ void setup()
     Osc1.setfDetune(0);
     Osc1.setcDetune(0);
     Osc1.setDetunatorAmount(0);
-    Osc3.setGlideTime(150);
+    Osc2.setGlideTime(150);
     Osc2.setfDetune(0);
     Osc2.setcDetune(0);
     Osc2.setDetunatorAmount(0);
     
-    Osc2.setGlideTime(150);
+    Osc3.setGlideTime(150);
     Osc3.setcDetune(-12);
     
-    Osc1.setWaveTable(selectSawTable);
-    Osc2.setWaveTable(selectSawTable);
-    Osc3.setWaveTable(selectSawTable);
+    Osc1.setWaveTable(selectSqrTable);
+    Osc2.setWaveTable(selectSqrTable);
+    Osc3.setWaveTable(selectSqrTable);
     
     Lfo1.frequency(0.8);
     Lfo1.amplitude(.5);
@@ -77,12 +79,15 @@ void loop()
  //   digitalPot1Write(fEnv.firstvalue>>7);
     
     //digitalPot1Write(filterFreq);
-    if(e > 100)
+    if(e > 200)
     {
-        e-=100;
+        e-=200;
         DEBUG_PRINT1("VCF.outvalue", VCF.outvalue);
         DEBUG_PRINT1("VCF.freq", VCF.freq);
+        DEBUG_PRINT1("VCF.envAmt", VCF.envAmt);
+        DEBUG_PRINT1("VCF.modAmt", VCF.modAmt);
         DEBUG_PRINT1("VCF.res", VCF.res);
+        DEBUG_PRINT1("AudioMemoryUsage()", AudioMemoryUsage());
     }
     if(seqToggle > 0)
     {

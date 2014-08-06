@@ -43,16 +43,14 @@ public:
     uint16_t outvalue;
     uint16_t freq;
     int res;
-    void setEnvAmt(uint16_t value)
-    {
-        envAmt = value;
-    }
+    void setEnvAmt(uint16_t value);
+    uint16_t envAmt = 30000;
+    uint16_t modAmt = 30000;
 private:
     audio_block_t *inputQueueArray[2];//2 blocks: one for the envelope, the other for the modulation
     filtertype filterType;
     
-    uint16_t envAmt = 30000;
-    uint16_t modAmt = 30000;
+    
     
     int freqPot1ChipSelect = 10;
     int freqPot2ChipSelect = 9;

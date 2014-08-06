@@ -48,6 +48,13 @@ void AudioSynthDigiFilter::setFrequency(uint16_t value)
 {
     freq = value<<8;//scale to 0 to 65535
 }
+
+void AudioSynthDigiFilter::setEnvAmt(uint16_t value)
+{
+    envAmt = value;
+    if(envAmt + freq > 65536)
+    envAmt = 65536-freq;
+}
 void AudioSynthDigiFilter::setFiltertype(filtertype newvalue)
 {
     filterType = newvalue;
@@ -74,7 +81,7 @@ void digitalPotWrite(int value) {
 void AudioSynthDigiFilter::update(void)
 {
     audio_block_t *block, *modBlock;
-    uint16_t envIn, baseFreq;
+    uint16_t baseFreq,envIn;
     int16_t modIn;
     uint8_t pot1value;
     block = receiveReadOnly(0);
@@ -85,7 +92,7 @@ void AudioSynthDigiFilter::update(void)
         {
             //final frequency = baseFreq + envIn * envAmt + modIn * modAmt;
             //following implementation isn't correct yet: negative envIns aren't possible
-            envIn = (block->data[64] * envAmt) >> 15;//32768 is the middle here, so we can have inverting and non in
+            envIn = (block->data[64] * (envAmt)) >> 15;//32768 is the middle here, so we can have inverting and non in
             modIn = (modBlock->data[64] * modAmt) >> 15;
             baseFreq = freq;
             int32_t totalfreq = baseFreq + envIn + modIn;
@@ -94,9 +101,9 @@ void AudioSynthDigiFilter::update(void)
             pot1value = totalfreq >> 8;
             outvalue = pot1value;
             digitalPotWrite(pot1value);
+            release(modBlock);
         }
-        release(modBlock);
+        release(block);
     }
-    release(block);
 }
 

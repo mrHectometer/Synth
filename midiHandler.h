@@ -51,7 +51,7 @@ static int antilog(uint8_t uc_linear)
 
 uint8_t currentNote;//poor man's note administrator
 
-float control_oscs_mix = 0.0;
+float control_oscs_mix = 0.5;
 float control_subosc_mix = 0.5;
 void OnNoteOn(byte channel, byte note, byte velocity)
 {
@@ -113,13 +113,16 @@ void OnControlChange(byte channel, byte control, byte value)
     if(control == 20) Osc1.toggleWaveTable();//sin tri sqr saw
     if(control == 21) Osc1.setcDetune(value-24);//-24 - 24
     if(control == 22) Osc1.setfDetune(value-65);//-65 - + 64 
+    if(control == 23) Osc1.setPulseWidth(value<<25);//-65 - + 64 
+    if(control == 24) Osc1.setSelfFMAmount(value);
     
     if(control == 40) Osc2.toggleWaveTable();//sin tri sqr saw
     if(control == 41) Osc2.setcDetune(value-24);//-24 - 24
     if(control == 42) Osc2.setfDetune(value-65);//-65 - + 64
     if(control == 43) Osc2.setDetunatorAmount((int)((float)value/1.27));
-    if(control == 44) Osc2.setFMAmount((float)value/127.0);
-    
+    if(control == 44) Osc2.setFMAmount(value);
+    if(control == 45) Osc2.setSelfFMAmount(value);
+    if(control == 46) Osc2.setPulseWidth(value<<25);//-65 - + 64 
     
     if(control == 60) Osc3.toggleWaveTable();//sin tri sqr saw
     if(control == 61) Osc3.setcDetune(value-24);//-24 - 24         -        hier moet nog iets speciaals komen: een octaaf functie ofzo
@@ -160,7 +163,7 @@ void OnControlChange(byte channel, byte control, byte value)
     }
     if(control == 123) 
     {
-        VCF.setEnvAmt(value<<8);
+        VCF.setEnvAmt(value<<9);
     }
     if(control == 127) seqToggle = value;
     //lfo

@@ -4,6 +4,7 @@
 #include "audiostream.h"
 #include "arm_math.h"
 #include "utility/dspinst.h"
+#include "debugUtils.h"
 ///////////////////////////////////////////////////////////////////////////////////////////
 extern const float nMidiFrequency[];
 extern const int16_t sinTable[];
@@ -41,10 +42,24 @@ public:
     void setcDetune(int notes);
     void setGlideTime(float mSeconds);
     uint32_t phaseIncGlide(int num_samples);
-    void setFMAmount(float value);
-    void setRMAmount(float value);
+    void setFMAmount(uint8_t value);
+    void setRMAmount(uint8_t value);
     void setDetunatorAmount(int value);
     void setDetuneVariables(int coarseDetune, int fineDetune, int pitchBend, int modulation);
+    void setPulseWidth(uint32_t value)
+    {
+        pulseWidth = value;
+    }
+    void setSelfFMAmount(uint8_t value)
+    {
+        int16_t newvalue = value<<8;
+        if(newvalue < 327)//a hunderth of fm is almost unhearable anyway
+            newvalue = 0;
+        __disable_irq();
+            selfFMAmount = newvalue;
+        __enable_irq();
+        DEBUG_PRINT1("selfFMAmount",selfFMAmount);
+    }
 private:
     void switchTable(uint8_t order, uint8_t table);
     
@@ -68,8 +83,10 @@ private:
     int32_t magnitude;
     int16_t fmAmount;
     int16_t detunatorAmount;
+    uint32_t pulseWidth;
     uint32_t detunatorMul[6];//multiply the inc with this value >>31
     uint32_t phaseD[6];
+    int16_t selfFMAmount;
     int fDetune = 0;//fine (don't believe comments when they say they are fine)
     int cDetune = 0;//coarse
     int pitchBend = 0;
